@@ -32,16 +32,16 @@ public class Predict implements Command {
                 return false;
             }
             String[] words = content.split(" ");
-            Map<String, String> frequencyMap = new HashMap<String, String>();
+            Map<String, String> wordsFreq = new HashMap<String, String>();
             for (String w : words){
-                if (frequencyMap.get(w) == null) {
-                    frequencyMap.put(w, getNextFreq(w, words));
+                if (wordsFreq.get(w) == null) {
+                    wordsFreq.put(w, getNextFreq(w, words));
                 }
             }
             System.out.print(userWord);
             for(int i = 0; i < 19 ; i++){
-                System.out.print(" " + frequencyMap.get(userWord));
-                userWord = frequencyMap.get(userWord);
+                System.out.print(" " + wordsFreq.get(userWord));
+                userWord = wordsFreq.get(userWord);
             }
         } catch (IOException e) {
             System.out.println("Unreadable file: " + e);
@@ -51,18 +51,18 @@ public class Predict implements Command {
     }
 
     private String getNextFreq(String w, String[] words) {
-        ArrayList<String> list = new ArrayList<>();
+        ArrayList<String> tmp = new ArrayList<>();
         for (int i = 0; i < words.length; i++) {
-            if (words[i].equals(w) && i != words.length) {
-                list.add(words[i + 1]);
+            if (words[i].equals(w) && i != words.length - 1) {
+                tmp.add(words[i + 1]);
             }
         }
-        Map<Object, Integer> frequencyMap = list.stream()
+        Map<Object, Integer> frequencyMap = tmp.stream()
                 .collect(toMap(
                         s -> s,
                         s -> 1,
                         Integer::sum));
-        List<String> res = list.stream()
+        List<Object> res = tmp.stream()
                 .sorted(comparing(frequencyMap::get).reversed())
                 .distinct()
                 .limit(1)
